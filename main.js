@@ -190,7 +190,9 @@ function saveGame() {
         floorLevel: floorLevel,
         floorCost: floorCost,
         itemsOwned: itemsOwned,
-        shopName: shopName.innerText
+        shopName: shopName.innerText,
+        currentSkin: currentSkin,
+        ownedSkins: ownedSkins
     };
     localStorage.setItem('coffeeShopSave', JSON.stringify(gameData));
 }
@@ -207,6 +209,11 @@ function loadGame() {
             itemsOwned = gameData.itemsOwned || [];
             if (gameData.shopName) {
                 shopName.innerText = gameData.shopName;
+            }
+            if (gameData.currentSkin) {
+                currentSkin = gameData.currentSkin;
+                if (gameData.ownedSkins) ownedSkins = gameData.ownedSkins;
+                updateSkinDisplay();
             }
 
             count.textContent = Math.floor(totalClickCount);
@@ -227,6 +234,86 @@ function loadGame() {
 setInterval(() => {
     saveGame();
 }, 10000);
+
+const cupSkins = [
+    { name: "Paper Cup", cost: 0, img: "https://img.icons8.com/color/480/coffee-to-go.png" },
+    { name: "Espresso Cup", cost: 500, img: "https://img.icons8.com/color/480/espresso-cup.png" },
+    { name: "Iced Coffee", cost: 2000, img: "https://img.icons8.com/color/480/iced-coffee.png" },
+    { name: "Milkshake", cost: 5000, img: "https://img.icons8.com/color/480/milkshake.png" },
+    { name: "Golden Chalice", cost: 50000, img: "https://img.icons8.com/color/480/trophy.png" }
+];
+
+let currentSkin = "Paper Cup";
+let ownedSkins = ["Paper Cup"];
+
+function createSkinShop() {
+    const skinContainer = document.getElementById("skin-items");
+    skinContainer.innerHTML = "";
+
+    cupSkins.forEach(skin => {
+        const isOwned = ownedSkins.includes(skin.name);
+        const isSelected = currentSkin === skin.name;
+        
+        const skinItem = document.createElement("div");
+        skinItem.className = "shop-item"; 
+        skinItem.style.display = "flex";
+        skinItem.style.justifyContent = "space-between";
+        skinItem.style.alignItems = "center";
+        
+        let btnHtml = "";
+        
+        if (isSelected) {
+            btnHtml = `<button disabled style="background:#2e7d32; cursor:default;">Equipped</button>`;
+        } else if (isOwned) {
+            btnHtml = `<button onclick="equipSkin('${skin.name}')">Equip</button>`;
+        } else {
+            btnHtml = `<button onclick="buySkin('${skin.name}')">$${skin.cost}</button>`;
+        }
+
+        skinItem.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${skin.img}" width="30" height="30">
+                <span style="font-weight:bold;">${skin.name}</span>
+            </div>
+            ${btnHtml}
+        `;
+        skinContainer.appendChild(skinItem);
+    });
+}
+function buySkin(skinName) {
+    const skin = cupSkins.find(s => s.name === skinName);
+    if (!skin) return;
+
+    if (totalClickCount >= skin.cost) {
+        totalClickCount -= skin.cost;
+        count.textContent = Math.floor(totalClickCount);
+        
+        ownedSkins.push(skin.name);
+        equipSkin(skinName);
+        console.log("Skin bought:", skinName);
+    } else {
+        alert("Not enough cash!");
+    }
+}
+function equipSkin(skinName) {
+    if (ownedSkins.includes(skinName)) {
+        currentSkin = skinName;
+        const skin = cupSkins.find(s => s.name === skinName);
+        if (skin) {
+            const img = document.querySelector("#click-button img");
+            if (img) img.src = skin.img;
+        }
+        createSkinShop();
+        saveGame();
+    }
+}
+function updateSkinDisplay() {
+     const skin = cupSkins.find(s => s.name === currentSkin);
+     if (skin) {
+         const img = document.querySelector("#click-button img");
+        if (img) img.src = skin.img;
+     }
+}
 
 const slotSymbols = ['☕', '🍩', '🍪', '🍰', '🥐'];
 
@@ -331,5 +418,6 @@ function updateSlotUI() {
 
 loadGame();
 createShopItems();
+createSkinShop();
 updateFloorButton();
 updateSlotUI();
