@@ -2,20 +2,34 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>Clicking infinity</title>
+        <title>Coffee Shop</title>
         <link rel="stylesheet" href="main.css">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     </head>
     <body>
-        <p>Money: $<span id="click-count">0</span></p>
-
-        <button id="click-button">
-            <img src="cookie.png" alt="Cookie" width="200" />
-        </button>
-
         <main class="game-layout">
-            <aside class="stats-panel"></aside>
-            <section class="game-area"></section>
-            <aside class="shop-panel"></aside>
+            <aside class="stats-panel" id="stats-panel">
+                <h2>Management</h2>
+                <div class="expansion-area">
+                    <h3>Shop Floors: <span id="floor-level">1</span></h3>
+                    <p>Each floor boosts global production by 25%!</p>
+                    <button onclick="buyFloor()" id="floor-button">Build Floor 2 ($5000)</button>
+                </div>
+            </aside>
+            <section class="game-area">
+                <div class="name-edit-container">
+                    <h1 class="shop-title" id="shop-name">Coffee Shop</h1>
+                    <button class="edit-btn" onclick="renameShop()">✏️</button>
+                </div>
+                <p class="money-display">Cash: $<span id="click-count">0</span></p>
+
+                <button id="click-button">
+                    <img src="https://img.icons8.com/color/480/coffee-to-go.png" alt="Coffee Cup" width="200" />
+                </button>
+            </section>
+            <aside class="shop-panel" id="shop-items">
+                <h2>Upgrade Menu</h2>
+            </aside>
         </main>
 
         <script src="main.js"></script>
