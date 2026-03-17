@@ -16,6 +16,7 @@ function renameShop() {
     const newName = prompt("Enter your new Coffee Shop name:", shopName.innerText);
     if (newName && newName.trim().length > 0) {
         shopName.innerText = newName;
+        saveGame();
     }
 }
 
@@ -23,14 +24,14 @@ function updateFloorButton() {
     const btn = document.getElementById("floor-button");
     const nextFloor = floorLevel + 1;
     btn.innerText = `Build Floor ${nextFloor} ($${floorCost})`;
-    
-    // Visual indication if you can afford it
+
     if (totalClickCount >= floorCost) {
         btn.style.backgroundColor = "#2e7d32"; 
         btn.disabled = false;
     } else {
         btn.style.backgroundColor = "#555";
     }
+    saveGame();
 }
 
 function buyFloor() {
@@ -43,7 +44,9 @@ function buyFloor() {
         
         document.getElementById("floor-level").innerText = floorLevel;
         updateFloorButton();
+        if (typeof updateSlotUI === "function") updateSlotUI();
         console.log(`Upgraded to Floor ${floorLevel}!`);
+        saveGame();
     } else {
         alert(`You need $${floorCost} to build the next floor!`);
     }
@@ -53,15 +56,15 @@ function buttonClick() {
   const machineOwned = itemsOwned.find((i) => i.name === "Espresso Machine");
   const machineLevel = machineOwned ? machineOwned.amount : 0;
 
-  // Base click is 1, doubled for every machine level
-  // Multiplied by Floor Level (1.25x per extra floor)
-  let clickValue = 1 * (2 ** machineLevel);
+    let clickValue = 1 + (machineLevel * 3);
+  
   clickValue = clickValue * getFloorMultiplier();
   
   totalClickCount += clickValue;
   count.textContent = Math.floor(totalClickCount);
   
   updateFloorButton(); 
+  saveGame();
 }
 
 button.addEventListener("click", function () {
@@ -74,27 +77,27 @@ const shopItems = [
     description: "Autoclicks once per second. Works for tips.",
     cost: 15,
     startingCost: 15,
-    autoClickValue: 1,
+    autoClickValue: 1, 
   },
   {
     name: "Espresso Machine",
-    description: "Doubles your click power!",
-    cost: 100,
-    startingCost: 100,
+    description: "Adds +3 to your click strength!",
+    cost: 250,
+    startingCost: 250,
   },
   {
     name: "Barista",
-    description: "A pro. Generates 5 clicks/sec.",
+    description: "A pro. Generates 10 clicks/sec.",
     cost: 500,
     startingCost: 500,
-    autoClickValue: 5,
+    autoClickValue: 10,
   },
   {
       name: "Cafe Manager",
-      description: "Runs the floor. Generates 20 clicks/sec.",
+      description: "Runs the floor. Generates 50 clicks/sec.",
       cost: 2000,
       startingCost: 2000,
-      autoClickValue: 20,
+      autoClickValue: 50,
   }
 ];
 
@@ -131,6 +134,7 @@ function updateShopVisuals() {
         const id = `owned-${item.name.replace(/\s+/g, '')}`;
         const el = document.getElementById(id);
         if (el) el.textContent = item.amount;
+        saveGame();
     });
 }
 
@@ -172,6 +176,7 @@ function buyItem(itemName) {
     
     createShopItems(); 
     updateFloorButton();
+    saveGame();
 
     console.log(`Bought ${itemName}!`);
   } else {
@@ -179,6 +184,152 @@ function buyItem(itemName) {
   }
 }
 
-// Initialize the shop
+function saveGame() {
+    const gameData = {
+        totalClickCount: totalClickCount,
+        floorLevel: floorLevel,
+        floorCost: floorCost,
+        itemsOwned: itemsOwned,
+        shopName: shopName.innerText
+    };
+    localStorage.setItem('coffeeShopSave', JSON.stringify(gameData));
+}
+
+function loadGame() {
+    const savedData = localStorage.getItem('coffeeShopSave');
+    if (savedData) {
+        try {
+            const gameData = JSON.parse(savedData);
+            
+            totalClickCount = gameData.totalClickCount || 0;
+            floorLevel = gameData.floorLevel || 1;
+            floorCost = gameData.floorCost || 5000;
+            itemsOwned = gameData.itemsOwned || [];
+            if (gameData.shopName) {
+                shopName.innerText = gameData.shopName;
+            }
+
+            count.textContent = Math.floor(totalClickCount);
+            document.getElementById("floor-level").innerText = floorLevel;
+            
+            shopItems.forEach(item => {
+                const owned = itemsOwned.find(i => i.name === item.name);
+                if (owned) {
+                    item.cost = Math.floor(item.startingCost * (1.15 ** owned.amount));
+                }
+            });
+        } catch (e) {
+            console.error("Failed to load save data", e);
+        }
+    }
+}
+
+setInterval(() => {
+    saveGame();
+}, 10000);
+
+const slotSymbols = ['☕', '🍩', '🍪', '🍰', '🥐'];
+
+function getSlotCost() {
+    return 100 * floorLevel;
+}
+
+let isSpinning = false;
+
+function spinSlots() {
+    if (isSpinning) return;
+    
+    const cost = getSlotCost();
+    const slotMsg = document.getElementById('slot-msg');
+    const reels = [
+        document.getElementById('reel1'),
+        document.getElementById('reel2'),
+        document.getElementById('reel3')
+    ];
+    
+    if (totalClickCount >= cost) {
+        totalClickCount -= cost;
+        count.textContent = Math.floor(totalClickCount);
+        
+        isSpinning = true;
+        
+        document.getElementById('spin-btn').disabled = true;
+        
+        let spins = 0;
+        const maxSpins = 15;
+        const interval = setInterval(() => {
+            reels.forEach(reel => {
+                reel.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+            });
+            spins++;
+            if (spins >= maxSpins) {
+                clearInterval(interval);
+                finalizeSpin(reels, cost);
+            }
+        }, 100);
+        
+        slotMsg.innerText = "Spinning...";
+        slotMsg.style.color = "#555";
+        
+    } else {
+        slotMsg.innerText = "Not enough cash!";
+        slotMsg.style.color = "red";
+        setTimeout(() => {
+            updateSlotUI();
+        }, 2000);
+    }
+}
+
+function finalizeSpin(reels, cost) {
+    const r1 = reels[0].innerText;
+    const r2 = reels[1].innerText;
+    const r3 = reels[2].innerText;
+    const slotMsg = document.getElementById('slot-msg');
+    
+    let win = 0;
+    
+    if (r1 === r2 && r2 === r3) {
+        win = cost * 15;
+        slotMsg.innerText = `JACKPOT! Won $${win}!`;
+        slotMsg.style.color = "green";
+    } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+        win = cost * 2;
+        slotMsg.innerText = `Winner! Won $${win}!`;
+        slotMsg.style.color = "#2e7d32";
+    } else {
+        slotMsg.innerText = "No luck this time.";
+        slotMsg.style.color = "#555";
+    }
+    
+    if (win > 0) {
+        totalClickCount += win;
+        count.textContent = Math.floor(totalClickCount);
+    }
+    
+    isSpinning = false;
+    document.getElementById('spin-btn').disabled = false;
+    saveGame();
+
+    setTimeout(() => {
+        if (!isSpinning) {
+            updateSlotUI();
+        }
+    }, 2000);
+}
+
+function updateSlotUI() {
+    const slotMsg = document.getElementById('slot-msg');
+    const slotCostSpan = document.getElementById('slot-cost');
+    if (slotMsg) {
+        slotMsg.innerHTML = `Spin to win! Cost: $<span id="slot-cost">${getSlotCost()}</span>`;
+        slotMsg.style.color = "";
+    }
+    if (slotCostSpan) {
+        slotCostSpan.innerText = getSlotCost();
+    }
+}
+
+loadGame();
 createShopItems();
 updateFloorButton();
+updateSlotUI();

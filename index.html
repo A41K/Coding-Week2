@@ -15,6 +15,17 @@
                     <p>Each floor boosts global production by 25%!</p>
                     <button onclick="buyFloor()" id="floor-button">Build Floor 2 ($5000)</button>
                 </div>
+                
+                <div class="slots-container">
+                    <h3>Luck O'Latte Slots</h3>
+                    <div class="slot-machine">
+                        <div class="reel" id="reel1">☕</div>
+                        <div class="reel" id="reel2">🍩</div>
+                        <div class="reel" id="reel3">🍪</div>
+                    </div>
+                    <p id="slot-msg">Spin to win! Cost: <span id="slot-cost">100</span></p>
+                    <button onclick="spinSlots()" id="spin-btn">Spin!</button>
+                </div>
             </aside>
             <section class="game-area">
                 <div class="name-edit-container">

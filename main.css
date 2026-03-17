@@ -170,3 +170,57 @@ h1, h2, h3 {
 .shop-item button:active {
     background-color: #3e2723;
 }
+
+.slots-container {
+    background-color: #d7ccc8;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    text-align: center;
+    border: 1px solid #a1887f;
+}
+
+.slot-machine {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.reel {
+    width: 50px;
+    height: 50px;
+    background-color: #f5f5f5;
+    border: 2px solid #5d4037;
+    border-radius: 5px;
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#spin-btn {
+    background-color: #8d6e63;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+#spin-btn:hover {
+    background-color: #6d4c41;
+}
+
+#spin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#slot-msg {
+    min-height: 1.2em;
+    font-weight: bold;
+    color: #4e342e;
+}
