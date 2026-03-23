@@ -98,6 +98,27 @@ const shopItems = [
       cost: 2000,
       startingCost: 2000,
       autoClickValue: 50,
+  },
+  {
+      name: "Coffee Roaster",
+      description: "Master roaster. Generates 250 clicks/sec.",
+      cost: 50000,
+      startingCost: 50000,
+      autoClickValue: 250,
+  },
+  {
+      name: "Retail Line",
+      description: "Grocery store sales. Generates 1000 clicks/sec.",
+      cost: 250000,
+      startingCost: 250000,
+      autoClickValue: 1000,
+  },
+  {
+      name: "Global Franchise",
+      description: "World domination. Generates 5000 clicks/sec.",
+      cost: 1000000,
+      startingCost: 1000000,
+      autoClickValue: 5000,
   }
 ];
 
