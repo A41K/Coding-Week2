@@ -3,7 +3,7 @@ const count = document.getElementById("click-count");
 const shopName = document.getElementById("shop-name");
 let totalClickCount = 0;
 let floorLevel = 1;
-let floorCost = 5000;
+let floorCost = 50000;
 
 const shopContainer = document.getElementById("shop-items");
 let itemsOwned = [];
@@ -74,9 +74,9 @@ button.addEventListener("click", function () {
 const shopItems = [
   {
     name: "Intern",
-    description: "Autoclicks once per second. Works for tips.",
-    cost: 15,
-    startingCost: 15,
+    description: "Autoclick 1c/s. Works for tips",
+    cost: 10,
+    startingCost: 10,
     autoClickValue: 1, 
   },
   {
@@ -87,38 +87,38 @@ const shopItems = [
   },
   {
     name: "Barista",
-    description: "A pro. Generates 10 clicks/sec.",
+    description: "A Barista pro. Generates 10c/s.",
     cost: 500,
     startingCost: 500,
     autoClickValue: 10,
   },
   {
       name: "Cafe Manager",
-      description: "Runs the floor. Generates 50 clicks/sec.",
+      description: "Runs the floor. Generates 50c/s.",
       cost: 2000,
       startingCost: 2000,
       autoClickValue: 50,
   },
   {
       name: "Coffee Roaster",
-      description: "Master roaster. Generates 250 clicks/sec.",
-      cost: 50000,
-      startingCost: 50000,
-      autoClickValue: 250,
+      description: "Master roaster. Generates 100c/s.",
+      cost: 12500,
+      startingCost: 12500,
+      autoClickValue: 100,
   },
   {
       name: "Retail Line",
-      description: "Grocery store sales. Generates 1000 clicks/sec.",
-      cost: 250000,
-      startingCost: 250000,
-      autoClickValue: 1000,
+      description: "Grocery store sales. Generates 500c/s.",
+      cost: 100000,
+      startingCost: 100000,
+      autoClickValue: 500,
   },
   {
       name: "Global Franchise",
-      description: "World domination. Generates 5000 clicks/sec.",
+      description: "World domination. Generates 1000c/s",
       cost: 1000000,
       startingCost: 1000000,
-      autoClickValue: 5000,
+      autoClickValue: 1000,
   }
 ];
 
@@ -201,7 +201,7 @@ function buyItem(itemName) {
 
     console.log(`Bought ${itemName}!`);
   } else {
-    console.log(`Not enough money! Need ${item.cost}`);
+    console.log(`Not enough money! You need ${item.cost}`);
   }
 }
 
@@ -260,9 +260,11 @@ const cupSkins = [
     { name: "Paper Cup", cost: 0, img: "https://img.icons8.com/color/480/coffee-to-go.png" },
     { name: "Espresso Cup", cost: 500, img: "https://img.icons8.com/color/480/espresso-cup.png" },
     { name: "Iced Coffee", cost: 2000, img: "https://img.icons8.com/color/480/iced-coffee.png" },
-    { name: "Milkshake", cost: 5000, img: "https://img.icons8.com/color/480/milkshake.png" },
-    { name: "Golden Chalice", cost: 50000, img: "https://img.icons8.com/color/480/trophy.png" }
+    { name: "Milkshake", cost: 50000, img: "https://img.icons8.com/color/480/milkshake.png" },
+    { name: "Golden Chalice", cost: 1000000, img: "https://img.icons8.com/color/480/trophy.png" }
 ];
+
+// These images were grabbed from https://img.icons8.com/. Big thanks to them <3
 
 let currentSkin = "Paper Cup";
 let ownedSkins = ["Paper Cup"];
@@ -336,10 +338,10 @@ function updateSkinDisplay() {
      }
 }
 
-const slotSymbols = ['☕', '🍩', '🍪', '🍰', '🥐'];
+const slotSymbols = ['☕', '🍩', '🍪', '🍰', '🥐', '🔥', '🥨', '🥖', '🧇', '🫖', '🍵'];
 
 function getSlotCost() {
-    return 100 * floorLevel;
+    return 250 * floorLevel;
 }
 
 let isSpinning = false;
@@ -364,7 +366,7 @@ function spinSlots() {
         document.getElementById('spin-btn').disabled = true;
         
         let spins = 0;
-        const maxSpins = 15;
+        const maxSpins = 20;
         const interval = setInterval(() => {
             reels.forEach(reel => {
                 reel.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
